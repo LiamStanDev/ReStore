@@ -12,6 +12,9 @@ builder.Services.AddDbContext<StoreContext>(opt => {
     // GetConnectionString is the short hand of builder.Configuration.GetSession("ConnectionStrings")["DefaultConnection"]
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,9 +23,13 @@ if (app.Environment.IsDevelopment()) {
     app.UseSwaggerUI();
 }
 
+app.UseCors(policy => {
+    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+});
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 using (var scope = app.Services.CreateScope()) {
     try {
