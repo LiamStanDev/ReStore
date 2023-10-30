@@ -7,9 +7,11 @@ import {
   createTheme,
 } from "@mui/material";
 import { Outlet } from "react-router";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const paletteType = darkMode ? "dark" : "light";
 
   const theme = createTheme({
@@ -23,6 +25,10 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <ToastContainer
+        position="bottom-right"
+        theme={darkMode ? "dark" : "colored"}
+      />
       {/* CssBaseline will remove the padding and margin which is defaul setting in browser */}
       <CssBaseline />
       <Header darkMode={darkMode} setDarkMode={setDarkMode} />

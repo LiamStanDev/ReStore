@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "./app/layout/style.css";
 import "@fontsource/roboto/300.css";
@@ -9,7 +8,7 @@ import { RouterProvider } from "react-router-dom";
 import router from "./app/router/Routers.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <RouterProvider router={router} />,
+  // </React.StrictMode>,
 );

@@ -9,8 +9,10 @@ public class StoreContext : DbContext {
     // I add this constructor. The options will pass to the base class which is 
     // DbContext.
     public StoreContext(DbContextOptions options) : base(options) {
+
     }
 
     public DbSet<Product> Products { get; set; }
+
 }
 

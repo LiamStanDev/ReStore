@@ -1,5 +1,6 @@
 using API.Data;
 using Microsoft.EntityFrameworkCore;
+using Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,12 +11,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<StoreContext>(opt => {
     // GetConnectionString is the short hand of builder.Configuration.GetSession("ConnectionStrings")["DefaultConnection"]
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    // opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.UseMySql(builder.Configuration.GetConnectionString("MariaDB"), ServerVersion.Parse("10.9.5-mariadb"));
+    opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 builder.Services.AddCors();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
@@ -42,9 +47,8 @@ using (var scope = app.Services.CreateScope()) {
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "A problem occurred during migration");
-        throw;
+        throw ex;
     }
 }
 
 app.Run();
-

@@ -7,28 +7,34 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import Product from "../../app/models/product";
+import agent from "../../app/api/agent";
+import NotFound from "../../app/errors/NotFound";
+import Loading from "../../app/layout/Loading";
 
 const ProductDetail = () => {
-  const { id } = useParams();
+  // get id from url string by react-router
+  // it's the way to set item type inside an object.
+  const { id } = useParams<{ id: string }>();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/Products/${id}`)
-      .then((res) => setProduct(res.data))
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
+    // to make sure id is not undefined
+    id &&
+      agent.Catalog.detail(parseInt(id))
+        .then((product) => setProduct(product))
+        .catch((error) => console.log(error))
+        .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <h1>Loading...</h1>;
+  if (loading) return <Loading message="Loading product..." />;
 
-  if (!product) return <h1>Product not found.</h1>;
+  if (!product) return <NotFound />;
 
   return (
     <Grid container spacing={6}>

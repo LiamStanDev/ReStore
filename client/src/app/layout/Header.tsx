@@ -44,6 +44,7 @@ const Header = ({ darkMode, setDarkMode }: Prop) => {
     },
   ];
 
+  // this is navbar css style
   const navStyle = {
     color: "inherit",
     typography: "h6",
