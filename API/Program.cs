@@ -28,7 +28,10 @@ if (app.Environment.IsDevelopment()) {
 }
 
 app.UseCors(policy => {
-    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+    // why allow creadentials?
+    // because the cookies etc. are in the localhost:3000 which is not
+    // in the same domain, we need to set allow creadential to accept cookies.
+    policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
 });
 app.UseAuthorization();
 
