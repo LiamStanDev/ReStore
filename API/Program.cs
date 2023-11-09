@@ -13,7 +13,6 @@ builder.Services.AddDbContext<StoreContext>(opt => {
     // GetConnectionString is the short hand of builder.Configuration.GetSession("ConnectionStrings")["DefaultConnection"]
     // opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
     opt.UseMySql(builder.Configuration.GetConnectionString("MariaDB"), ServerVersion.Parse("10.9.5-mariadb"));
-    opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 builder.Services.AddCors();
