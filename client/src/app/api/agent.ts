@@ -3,7 +3,8 @@ import { toast } from "react-toastify";
 import router from "../router/Routers";
 
 axios.defaults.baseURL = "http://localhost:5000/api/";
-
+// pass and receive cookies to different domain
+axios.defaults.withCredentials = true;
 // interceptor
 // use method has two params:
 // 1. OnFulfilled: when status code in 200 range
@@ -86,10 +87,19 @@ const TestError = {
   getValidationError: () => requests.get("buggy/validation-error"),
 };
 
+const Basket = {
+  get: () => requests.get("basket"),
+  addItem: (productId: number, quantity: number = 1) =>
+    requests.post(`basket?productId=${productId}&quantity=${quantity}`, {}),
+  removeItem: (productId: number, quantity: number = 1) =>
+    requests.delete(`basket?productId=${productId}&quantity=${quantity}`),
+};
+
 // put all agent here.
 const agent = {
   Catalog,
   TestError,
+  Basket,
 };
 
 export default agent;
