@@ -56,7 +56,7 @@ axios.interceptors.response.use(
     // So we need to wrap it as Promise.reject()
     // send promise to next pipeline
     return Promise.reject(error.response);
-  },
+  }
 );
 
 // setting REST request method to make code don't repeat.

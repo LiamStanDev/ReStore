@@ -32,7 +32,7 @@ public class BasketController : BaseApiController {
         if (basket == null) basket = await CreateBasket();
 
         var product = await _context.Products.FindAsync(productId);
-        if (product == null) return NotFound();
+        if (product == null) return BadRequest(new ProblemDetails { Title = "Product Not Found" });
 
         basket.AddItem(product, quantity);
 
@@ -65,7 +65,7 @@ public class BasketController : BaseApiController {
 
         var product = await _context.Products.FindAsync(productId);
         if (product == null) {
-            return NotFound();
+            return BadRequest(new ProblemDetails { Title = "Problem removing item from basket" });
         }
 
         basket.RemoveItem(productId, quantity);
