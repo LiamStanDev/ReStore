@@ -1,5 +1,8 @@
+using System.Text.Json;
 using API.Data;
 using API.Entities;
+using API.Extensions;
+using API.RequestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,10 +23,34 @@ public class ProductsController : BaseApiController {
     }
 
 
+    // If using object as an action argument, they will persume that
+    // the data is from request body. I want to use in query string, so
+    // I use [FromQuery] attribute
     [HttpGet]
-    public async Task<ActionResult<List<Product>>> GetProducts() {
-        var products = await _context.Products.ToListAsync();
+    public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams) {
+        var query = _context.Products
+            .AsQueryable()
+            .Sort(productParams.OrderBy)
+            .Search(productParams.SearchTerm)
+            .Filter(productParams.Brands, productParams.Types);
+
+
+        var products = await PagedList<Product>.ToPagedListAsync(
+                query,
+                productParams.PageNumber,
+                productParams.PageSize
+                );
+
+        Response.AddPaginationHeader(products.MetaData);
 
         return Ok(products);
+    }
+
+    [HttpGet("filter")]
+    public async Task<IActionResult> GetFilters() {
+        var brands = await _context.Products.Select(p => p.Brand).Distinct().ToListAsync();
+        var types = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
+
+        return Ok(new { brands, types });
     }
 }

@@ -61,7 +61,9 @@ axios.interceptors.response.use(
 
 // setting REST request method to make code don't repeat.
 const requests = {
-  get: (url: string) => axios.get(url).then((res) => res.data),
+  get: (url: string, params?: URLSearchParams) =>
+    // need to pass Config object so wrap param inside object
+    axios.get(url, { params }).then((res) => res.data),
 
   post: (url: string, body: object) =>
     axios.post(url, body).then((res) => res.data),
@@ -74,8 +76,9 @@ const requests = {
 
 // specific for Catalog functionality.
 const Catalog = {
-  list: () => requests.get("products"),
+  list: (params: URLSearchParams) => requests.get("products", params),
   detail: (id: number) => requests.get(`products/${id}`),
+  filters: () => requests.get("products/filter"),
 };
 
 // specific for error testing
