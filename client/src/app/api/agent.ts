@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import router from "../router/Routers";
+import { PaginatedResponse } from "../models/pagination";
 
 axios.defaults.baseURL = "http://localhost:5000/api/";
 // pass and receive cookies to different domain
@@ -17,7 +18,15 @@ axios.defaults.withCredentials = true;
 axios.interceptors.response.use(
   async (response) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    return response; // response is a Promise.resolve()
+    const pagination = response.headers["pagination"]; // axios only use lower case, event if browser show it's uppercase.
+    if (pagination) {
+      response.data = new PaginatedResponse(
+        response.data,
+        JSON.parse(pagination)
+      );
+      console.log(response);
+    }
+    return response;
   },
   (error: AxiosError) => {
     const { data, status } = error.response as AxiosResponse;

@@ -26,6 +26,7 @@ const CheckBoxButtons = ({ items, checked, onChange }: Props) => {
     }
 
     setCheckedItem(newChecked);
+
     onChange(newChecked);
   };
 

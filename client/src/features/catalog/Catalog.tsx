@@ -6,22 +6,14 @@ import {
   ProductSelectors,
   fetchFiltersAsync,
   fetchProdcutsAsync,
+  setPageNumber,
   setProductParams,
 } from "./catalogSlice";
-import {
-  Box,
-  Checkbox,
-  Container,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Pagination,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import ProductSearch from "./ProductSearch";
 import RadioButtonGroup from "../../app/components/RadioButtonGroup";
 import CheckBoxButtons from "../../app/components/CheckBoxButtons";
+import AppPagination from "../../app/components/AppPagination";
 
 const sortOptions = [
   {
@@ -43,11 +35,11 @@ const Catalog = () => {
   const dispatch = useAppDispatch();
   const {
     productsLoaded,
-    status,
     filtersLoaded,
     brands,
     types,
     productParams,
+    metaData,
   } = useAppSelector((state) => state.catalog);
 
   useEffect(() => {
@@ -57,13 +49,14 @@ const Catalog = () => {
   useEffect(() => {
     if (!filtersLoaded) dispatch(fetchFiltersAsync());
   }, [filtersLoaded, dispatch]);
-  //
-  // if (status.includes("pending"))
-  //   return <Loading message="Loading products..." />;
+
+  if (!filtersLoaded) {
+    return <Loading message="Product is loading" />;
+  }
 
   return (
     <>
-      <Grid container spacing={4}>
+      <Grid container columnSpacing={4}>
         <Grid item xs={3}>
           <Paper sx={{ mb: 2 }}>
             <ProductSearch />
@@ -90,35 +83,26 @@ const Catalog = () => {
             <CheckBoxButtons
               items={types}
               checked={productParams.types || []}
-              onChange={(items: string[]) =>
-                dispatch(setProductParams({ types: items }))
-              }
+              onChange={(items: string[]) => {
+                dispatch(setProductParams({ types: items }));
+              }}
             />
-            <FormGroup>
-              {types.map((types) => (
-                <FormControlLabel
-                  key={types}
-                  control={<Checkbox />}
-                  label={types}
-                />
-              ))}
-            </FormGroup>
           </Paper>
         </Grid>
 
         <Grid item xs={9}>
-          {status.includes("pending") ? (
-            <Loading message="Loading products..." />
-          ) : (
-            <ProductList products={products} />
-          )}
+          <ProductList products={products} />
         </Grid>
         <Grid item xs={3}></Grid>
-        <Grid item xs={9}>
-          <Box display="flex" justifyContent="space-around" alignItems="center">
-            <Typography>Displaying 1-6 of 20 items</Typography>
-            <Pagination count={10} page={2} size="large" color="secondary" />
-          </Box>
+        <Grid item xs={9} sx={{ mt: 2, mb: 2 }}>
+          {metaData && (
+            <AppPagination
+              metaData={metaData}
+              onPageChage={(page: number) =>
+                dispatch(setPageNumber({ pageNumber: page }))
+              }
+            />
+          )}
         </Grid>
       </Grid>
     </>
