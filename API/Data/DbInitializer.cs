@@ -1,8 +1,28 @@
 using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 
 public static class DbInitializer {
-    public static void Initialize(StoreContext context) {
+    public static async Task Initialize(StoreContext context, UserManager<User> userManager) {
+
+        if (!userManager.Users.Any()) {
+            var user = new User {
+                UserName = "liam",
+                Email = "geffc1454@gmail.com"
+            };
+            // has no needs for use saveAsnyc, it has automatically down.
+            await userManager.CreateAsync(user, "Pa$$w0rd");
+            await userManager.AddToRoleAsync(user, "Member");
+
+            var admin = new User {
+                UserName = "admin",
+                Email = "admin@gmail.com"
+            };
+            await userManager.CreateAsync(admin, "Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin, new string[] { "Admin", "Member" });
+        }
+
+
         if (context.Products.Any()) return;
 
         var products = new List<Product>() {

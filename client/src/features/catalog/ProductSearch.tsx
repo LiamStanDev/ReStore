@@ -13,7 +13,7 @@ const ProductSearch = () => {
 
   const [searchTerm, setSearchTerm] = useState(productParams.searchTerm);
 
-  const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
     debouncedSearch(event);
   };

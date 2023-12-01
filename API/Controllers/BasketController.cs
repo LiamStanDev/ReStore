@@ -13,22 +13,22 @@ public class BasketController : BaseApiController {
         _context = context;
     }
 
-    [HttpGet(Name = "GetBasket")] // The name is for locating 201 Create.
+    [HttpGet(Name = "GetBasket")] // The name is for locating 201 Create. See AddItemToBasket.
     public async Task<ActionResult<BasketDTO>> GetBasket() {
 
-        var basket = await RetriveBasket();
+        var basket = await RetriveBasket(GetBuyerId());
 
         if (basket == null) {
             return NotFound();
         }
 
-        var basketDTO = MapBasketToDTO(basket);
+        var basketDTO = basket.MapBasketToDTO();
         return Ok(basketDTO);
     }
 
     [HttpPost]
     public async Task<ActionResult<BasketDTO>> AddItemToBasket(int productId, int quantity) {
-        var basket = await RetriveBasket();
+        var basket = await RetriveBasket(GetBuyerId());
         if (basket == null) basket = await CreateBasket();
 
         var product = await _context.Products.FindAsync(productId);
@@ -50,14 +50,14 @@ public class BasketController : BaseApiController {
             // return Created("http://localhost:5000/api/Basket", MapBasketToDTO(basket));
 
             // 3. Using CreatedAtRoute method the first string is the Name property of controller action.
-            return CreatedAtRoute("GetBasket", MapBasketToDTO(basket));
+            return CreatedAtRoute("GetBasket", basket.MapBasketToDTO());
         }
         return BadRequest(new ProblemDetails { Title = "Problem saving item to basket" });
     }
 
     [HttpDelete]
     public async Task<ActionResult> RemoveBasketItem(int productId, int quantity) {
-        var basket = await RetriveBasket();
+        var basket = await RetriveBasket(GetBuyerId());
 
         if (basket == null) {
             return NotFound();
@@ -80,19 +80,36 @@ public class BasketController : BaseApiController {
     }
 
 
-    private async Task<Basket> RetriveBasket() {
+    // 匿名 Basket 會使用 Cookie 存放在瀏覽器中
+    // 已登入的使用者使用 buterId 也就是 username 就能
+    // 取得他自己的 Basket.
+    private async Task<Basket> RetriveBasket(string buyerId) {
+        if (string.IsNullOrEmpty(buyerId)) {
+            Response.Cookies.Delete("buyerId");
+            return null;
+        }
+
         var basket = await _context.Baskets
             .Include(b => b.Items) // navigator should be include specifically
             .ThenInclude(i => i.Product)  // BasketItem has product navigator
-            .FirstOrDefaultAsync(b => b.BuyerId == Request.Cookies["buyerId"]);
+            .FirstOrDefaultAsync(b => b.BuyerId == buyerId);
         return basket;
     }
 
-    private async Task<Basket> CreateBasket() {
-        var buyerId = Guid.NewGuid().ToString();
+    private string GetBuyerId() {
+        return User.Identity?.Name ?? Request.Cookies["buyerId"];
+    }
 
-        var cookieOptions = new CookieOptions { IsEssential = true, Expires = DateTime.Now.AddDays(30) };
-        Response.Cookies.Append("buyerId", buyerId, cookieOptions);
+    private async Task<Basket> CreateBasket() {
+        // 用戶 Basket
+        var buyerId = User.Identity?.Name;
+
+        // 匿名 Basket
+        if (string.IsNullOrEmpty(buyerId)) {
+            buyerId = Guid.NewGuid().ToString();
+            var cookieOptions = new CookieOptions { IsEssential = true, Expires = DateTime.Now.AddDays(30) };
+            Response.Cookies.Append("buyerId", buyerId, cookieOptions);
+        }
 
         var basket = new Basket { BuyerId = buyerId };
 
@@ -101,22 +118,4 @@ public class BasketController : BaseApiController {
         return basket;
     }
 
-    private BasketDTO MapBasketToDTO(Basket basket) {
-        return new BasketDTO {
-            Id = basket.Id,
-            BuyerId = basket.BuyerId,
-            Items = basket.Items.Select(i =>
-                    new BasketItemDTO {
-                        ProductId = i.ProductId,
-                        Quantity = i.Quantity,
-                        Name = i.Product.Name,
-                        Type = i.Product.Type,
-                        Brand = i.Product.Brand,
-                        Price = i.Product.Price,
-                        PictureUrl = i.Product.PictureUrl
-                    }).ToList()
-
-        };
-
-    }
 }

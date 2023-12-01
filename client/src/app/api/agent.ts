@@ -2,10 +2,21 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import router from "../router/Routers";
 import { PaginatedResponse } from "../models/pagination";
+import { store } from "../store/configStore";
+import { User } from "../models/user";
 
 axios.defaults.baseURL = "http://localhost:5000/api/";
 // pass and receive cookies to different domain
 axios.defaults.withCredentials = true;
+
+axios.interceptors.request.use((request) => {
+  const token = store.getState().acount.user?.token;
+  if (token) {
+    request.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return request;
+});
 // interceptor
 // use method has two params:
 // 1. OnFulfilled: when status code in 200 range
@@ -24,7 +35,6 @@ axios.interceptors.response.use(
         response.data,
         JSON.parse(pagination)
       );
-      console.log(response);
     }
     return response;
   },
@@ -107,11 +117,18 @@ const Basket = {
     requests.delete(`basket?productId=${productId}&quantity=${quantity}`),
 };
 
+const Account = {
+  login: (values: any): Promise<User> => requests.post("account/login", values),
+  register: (values: any) => requests.post("account/register", values),
+  currentUser: () => requests.get("account/currentUser"),
+};
+
 // put all agent here.
 const agent = {
   Catalog,
   TestError,
   Basket,
+  Account,
 };
 
 export default agent;

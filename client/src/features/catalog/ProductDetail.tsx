@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import NotFound from "../../app/errors/NotFound";
 import Loading from "../../app/layout/Loading";
@@ -41,7 +41,9 @@ const ProductDetail = () => {
     if (!product && id) dispatch(fetchProductAsync(parseInt(id)));
   }, [id, item, dispatch, product]);
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     const q = parseInt(event.currentTarget.value);
     if (q >= 0) {
       setQuantity(parseInt(event.target.value));

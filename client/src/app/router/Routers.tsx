@@ -9,12 +9,25 @@ import BasketPage from "../../features/basket/BasketPage";
 import CheckoutPage from "../../features/checkout/CheckPage";
 import AboutPage from "../../features/about/AboutPage";
 import ContactPage from "../../features/contact/ContactPage";
+import Login from "../../features/account/Login";
+import Register from "../../features/account/Register";
+import RequireAuth from "./RequireAuth";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        // 這邊的意思是，若訪問 CheckoutPage 時會先進行 RequireAuth
+        element: <RequireAuth />,
+        children: [
+          {
+            path: "checkout",
+            element: <CheckoutPage />,
+          },
+        ],
+      },
       {
         path: "",
         element: <HomePage />,
@@ -48,8 +61,12 @@ const router = createBrowserRouter([
         element: <BasketPage />,
       },
       {
-        path: "checkout",
-        element: <CheckoutPage />,
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
       },
 
       {
