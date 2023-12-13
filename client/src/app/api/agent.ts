@@ -121,6 +121,13 @@ const Account = {
   login: (values: any): Promise<User> => requests.post("account/login", values),
   register: (values: any) => requests.post("account/register", values),
   currentUser: () => requests.get("account/currentUser"),
+  savedAddress: () => requests.get("account/savedAddress"),
+};
+
+const Orders = {
+  list: () => requests.get("orders"),
+  fetch: (id: number) => requests.get(`orders/${id}`),
+  create: (values: any) => requests.post("orders", values),
 };
 
 // put all agent here.
@@ -129,6 +136,7 @@ const agent = {
   TestError,
   Basket,
   Account,
+  Orders,
 };
 
 export default agent;

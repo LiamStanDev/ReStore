@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add serices to Dependency Injection Container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(cfg => {
     var jwtSecurityScheme = new OpenApiSecurityScheme {
         BearerFormat = "JWT",
@@ -48,7 +49,7 @@ builder.Services.AddCors();
 // builder.Services.AddIdentityCore<User>()
 //     .AddRoles<IdentityRole>()
 //     .AddEntityFrameworkStores<StoreContext>();
-builder.Services.AddIdentity<User, IdentityRole>(opt => {
+builder.Services.AddIdentity<User, Role>(opt => {
     opt.Password.RequireNonAlphanumeric = false;
     opt.User.RequireUniqueEmail = true;
 }).AddEntityFrameworkStores<StoreContext>();

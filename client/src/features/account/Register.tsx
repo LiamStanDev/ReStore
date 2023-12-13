@@ -8,7 +8,7 @@ import Container from "@mui/material/Container";
 import agent from "../../app/api/agent";
 import { Paper } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "react-toastify";
 
@@ -20,6 +20,8 @@ const Register = () => {
     setError,
   } = useForm({ mode: "onTouched" });
 
+  // 當向後端發送註冊時，後端會還傳 ModeValidationError
+  // 此時要將 errors 放到對應 name 的 message 中
   const handleValidationErrrors = (errors: []) => {
     errors.forEach((error: string) => {
       if (error.includes("Password")) {
@@ -30,6 +32,17 @@ const Register = () => {
         setError("username", { message: error });
       }
     });
+  };
+
+  const submit = (data: FieldValues) => {
+    agent.Account.register(data)
+      .then(() => {
+        toast.success("Registration successful - you can now login");
+        navigate("/login");
+      })
+      .catch((errors) => {
+        handleValidationErrrors(errors);
+      });
   };
   const navigate = useNavigate();
 
@@ -52,16 +65,7 @@ const Register = () => {
       </Typography>
       <Box
         component="form"
-        onSubmit={handleSubmit((data) =>
-          agent.Account.register(data)
-            .then(() => {
-              toast.success("Registration successful - you can now login");
-              navigate("/login");
-            })
-            .catch((errors) => {
-              handleValidationErrrors(errors);
-            })
-        )}
+        onSubmit={handleSubmit(submit)}
         noValidate
         sx={{ mt: 1 }}
       >
