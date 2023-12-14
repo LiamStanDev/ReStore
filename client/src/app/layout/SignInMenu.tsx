@@ -21,7 +21,7 @@ const SignInMenu = () => {
 
   return (
     <>
-      <Button onClick={handleClick} sx={{ typography: "h6" }}>
+      <Button onClick={handleClick} sx={{ typography: "h6", color: "white" }}>
         {user?.email}
       </Button>
       <Menu

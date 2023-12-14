@@ -15,4 +15,8 @@ public class BasketDTO {
 
     public List<BasketItemDTO> Items { get; set; }
 
+    public string PaymentIntentId { get; set; }
+
+    public string ClientSecret { get; set; }
+
 }

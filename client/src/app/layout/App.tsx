@@ -6,15 +6,17 @@ import {
   ThemeProvider,
   createTheme,
 } from "@mui/material";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "./Loading.tsx";
 import { useAppDispatch } from "../store/configStore.ts";
 import { fetchBasketAsync } from "../../features/basket/basketSlice.ts";
 import { fetchCurrentUser } from "../../features/account/accountSlice.ts";
+import HomePage from "../../features/home/HomePage.tsx";
 
 function App() {
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
 
@@ -47,7 +49,7 @@ function App() {
     },
   });
 
-  if (loading) return <Loading message="Initialing app..." />;
+  if (loading) return;
 
   return (
     <ThemeProvider theme={theme}>
@@ -58,10 +60,16 @@ function App() {
       {/* CssBaseline will remove the padding and margin which is defaul setting in browser */}
       <CssBaseline />
       <Header darkMode={darkMode} setDarkMode={setDarkMode} />
-      <Container>
-        {/* Outlet mean render the child element in App component*/}
-        <Outlet />
-      </Container>
+      {loading ? (
+        <Loading message="Initialing app..." />
+      ) : location.pathname === "/" ? (
+        <HomePage />
+      ) : (
+        <Container sx={{ mt: 4 }}>
+          <Outlet />
+        </Container>
+      )}
+      {/* Outlet mean render the child element in App component*/}
     </ThemeProvider>
   );
 }

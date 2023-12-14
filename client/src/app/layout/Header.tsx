@@ -71,7 +71,7 @@ const Header = ({ darkMode, setDarkMode }: Prop) => {
   }, 0);
 
   return (
-    <AppBar position="static" sx={{ mb: 4 }}>
+    <AppBar position="static">
       {/* sx: The system prop that allows defining system overrides as well as additional CSS styles. */}
       {/* source: https://mui.com/system/getting-started/the-sx-prop/ */}
       <Toolbar

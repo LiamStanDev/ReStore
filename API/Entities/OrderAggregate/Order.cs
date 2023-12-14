@@ -12,6 +12,8 @@ public class Order {
     public long SubTotal { get; set; }
     public long DeliveryFee { get; set; }
     public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
+    // for Stripe
+    public string PaymentIntentId { get; set; }
 
     public long GetTotal() {
         return SubTotal + DeliveryFee;

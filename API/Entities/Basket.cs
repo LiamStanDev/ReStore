@@ -5,6 +5,10 @@ public class Basket {
 
     public string BuyerId { get; set; }
 
+    // for Stripe
+    public string PaymentIntentId { get; set; }
+    public string ClientSecret { get; set; }
+
     public List<BasketItem> Items { get; set; } = new();
 
     public void AddItem(Product product, int quantity) {

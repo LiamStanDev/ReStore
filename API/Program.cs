@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Middleware;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,8 +70,9 @@ builder.Services.AddAuthentication(options => {
         };
     });
 builder.Services.AddAuthorization();
-
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<PaymentService>();
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
