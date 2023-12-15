@@ -7,7 +7,7 @@ public class Order {
     public string BuyerId { get; set; }
     [Required]
     public ShippingAddress ShippingAddress { get; set; }
-    public DateTime OrderDay { get; set; } = DateTime.Now;
+    public DateTime OrderDay { get; set; } = DateTime.UtcNow;
     public List<OrderItem> OrderItems { get; set; }
     public long SubTotal { get; set; }
     public long DeliveryFee { get; set; }

@@ -1,0 +1,27 @@
+# fly.toml app configuration file generated for liam-restore on 2023-12-15T09:55:44+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "liam-restore"
+primary_region = "nrt"
+
+[build]
+  image = "liamlin0107/restore:latest"
+
+[env]
+  ASPNETCORE_URLS="http://+8080"
+  StripeSettings__PublishableKey="pk_test_51OMi0FBtaw4o8q8Yx7JrVKqZ5uYsG3cm2A6T1l0QE3HK80uBvGOOl84t0HNkort3rFwl0ojBq3eGYVG789EjTBDq000BuaKUyZ"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256

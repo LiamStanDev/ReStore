@@ -5,7 +5,7 @@ import { PaginatedResponse } from "../models/pagination";
 import { store } from "../store/configStore";
 import { User } from "../models/user";
 
-axios.defaults.baseURL = "http://localhost:5000/api/";
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 // pass and receive cookies to different domain
 axios.defaults.withCredentials = true;
 
@@ -28,7 +28,9 @@ axios.interceptors.request.use((request) => {
  */
 axios.interceptors.response.use(
   async (response) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    if (import.meta.env.DEV) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
     const pagination = response.headers["pagination"]; // axios only use lower case, event if browser show it's uppercase.
     if (pagination) {
       response.data = new PaginatedResponse(

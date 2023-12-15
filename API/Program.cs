@@ -38,13 +38,32 @@ builder.Services.AddSwaggerGen(cfg => {
         }
     });
 });
+
+string connString;
+if (builder.Environment.IsDevelopment())
+    connString = builder.Configuration.GetConnectionString("DefaultConnection");
+else {
+    // Use connection string provided at runtime by FlyIO.
+    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+    // Parse connection URL to connection string for Npgsql
+    connUrl = connUrl.Replace("postgres://", string.Empty);
+    var pgUserPass = connUrl.Split("@")[0];
+    var pgHostPortDb = connUrl.Split("@")[1];
+    var pgHostPort = pgHostPortDb.Split("/")[0];
+    var pgDb = pgHostPortDb.Split("/")[1];
+    var pgUser = pgUserPass.Split(":")[0];
+    var pgPass = pgUserPass.Split(":")[1];
+    var pgHost = pgHostPort.Split(":")[0];
+    var pgPort = pgHostPort.Split(":")[1];
+    var updatedHost = pgHost.Replace("flycast", "internal");
+
+    connString = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+}
 builder.Services.AddDbContext<StoreContext>(opt => {
-    // GetConnectionString is the short hand of builder.Configuration.GetSession("ConnectionStrings")["DefaultConnection"]
-    // the other way is use buidler.Configuration["ConnectionStrings:DefaultConnection"]
-    // opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-    // opt.UseMySql(builder.Configuration["ConnectionStrings:MariaDB"], ServerVersion.Parse("10.9.5-mariadb"));
-    opt.UseMySql(builder.Configuration.GetConnectionString("MariaDB"), ServerVersion.Parse("10.9.5-mariadb"));
+    opt.UseNpgsql(connString);
 });
+
 
 builder.Services.AddCors();
 // builder.Services.AddIdentityCore<User>()
@@ -85,6 +104,10 @@ if (app.Environment.IsDevelopment()) {
     );
 }
 
+// wwwroot files
+app.UseDefaultFiles(); // look for index.html in wwwroot
+app.UseStaticFiles(); // serve for wwwroot content
+
 app.UseCors(policy => {
     // why allow creadentials?
     // because the cookies etc. are in the localhost:3000 which is not
@@ -98,6 +121,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapFallbackToController("Index", "Fallback");
 
 using (var scope = app.Services.CreateScope()) {
     try {

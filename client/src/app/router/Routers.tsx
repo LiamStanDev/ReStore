@@ -1,6 +1,5 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import App from "../layout/App";
-import HomePage from "../../features/home/HomePage";
 import Catalog from "../../features/catalog/Catalog";
 import ProductDetail from "../../features/catalog/ProductDetail";
 import ServerError from "../errors/ServerError";
