@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 80
 
 # copy csporj and restore as distinct layer
 COPY *.csproj ./ 
