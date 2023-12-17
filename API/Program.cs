@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(cfg => {
 
 string connString;
 if (builder.Environment.IsDevelopment())
-    connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    connString = builder.Configuration.GetConnectionString("PostgreSQL");
 else {
     // Use connection string provided at runtime by FlyIO.
     var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
@@ -88,6 +88,7 @@ builder.Services.AddAuthentication(options => {
                 GetBytes(builder.Configuration["JWTSettings:TokenKey2"]))
         };
     });
+
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PaymentService>();
@@ -121,6 +122,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// use Index method which in Fallback controller
 app.MapFallbackToController("Index", "Fallback");
 
 using (var scope = app.Services.CreateScope()) {
@@ -132,7 +134,6 @@ using (var scope = app.Services.CreateScope()) {
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         await DbInitializer.Initialize(context, userManager);
     } catch (Exception ex) {
-
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "A problem occurred during migration");
         throw ex;

@@ -1,38 +1,21 @@
 import { Typography, Grid, TextField } from "@mui/material";
-import { useFormContext } from "react-hook-form";
-import AppTextInput from "../../app/components/AppTextInput";
 import {
   CardCvcElement,
   CardExpiryElement,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import { StripeInput } from "./StripeInput";
-import { useState } from "react";
 import { StripeElementType } from "@stripe/stripe-js";
+import { useFormContext } from "react-hook-form";
+import AppTextInput from "../../app/components/AppTextInput";
+import { StripeInput } from "./StripeInput";
 
-export default function PaymentForm() {
+interface Props {
+  cardState: { elementError: { [key in StripeElementType]?: string } };
+  onCardInputChange: (event: any) => void;
+}
+
+export default function PaymentForm({ cardState, onCardInputChange }: Props) {
   const { control } = useFormContext();
-
-  // Form state need to write by ourselve
-  const [cardState, setCardState] = useState<{
-    elementError: { [key in StripeElementType]?: string };
-  }>({ elementError: {} });
-  const [cardComplete, setCardComplete] = useState<any>({
-    cardNumber: false,
-    cardExpiry: false,
-    cardCvc: false,
-  });
-
-  const onCardInputChange = (event: any) => {
-    setCardState({
-      ...cardState,
-      elementError: {
-        [event.elementType]: event.error?.message,
-      },
-    });
-
-    setCardComplete({ ...cardComplete, [event.elementType]: event.complete });
-  };
 
   return (
     <>

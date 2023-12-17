@@ -37,7 +37,7 @@ function App() {
       .finally(() => setLoading(false));
   }, [initApp, setLoading, loading]);
 
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const paletteType = darkMode ? "dark" : "light";
 
   const theme = createTheme({

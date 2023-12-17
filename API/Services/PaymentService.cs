@@ -13,7 +13,7 @@ public class PaymentService {
 
     public async Task<PaymentIntent> CreateOrUpdatePaymentIntent(Basket basket) {
 
-        StripeConfiguration.ApiKey = _config["StripeSettings:ScretKey"];
+        StripeConfiguration.ApiKey = _config["StripeSettings:SecretKey"];
 
         var service = new PaymentIntentService();
         var intent = new PaymentIntent();

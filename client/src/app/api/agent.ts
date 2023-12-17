@@ -28,9 +28,9 @@ axios.interceptors.request.use((request) => {
  */
 axios.interceptors.response.use(
   async (response) => {
-    if (import.meta.env.DEV) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
+    // if (import.meta.env.DEV) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    // }
     const pagination = response.headers["pagination"]; // axios only use lower case, event if browser show it's uppercase.
     if (pagination) {
       response.data = new PaginatedResponse(
@@ -132,6 +132,10 @@ const Orders = {
   create: (values: any) => requests.post("orders", values),
 };
 
+const Payment = {
+  createPaymentIntent: () => requests.post("payments", {}),
+};
+
 // put all agent here.
 const agent = {
   Catalog,
@@ -139,6 +143,7 @@ const agent = {
   Basket,
   Account,
   Orders,
+  Payment,
 };
 
 export default agent;

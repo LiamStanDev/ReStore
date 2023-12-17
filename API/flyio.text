@@ -1,8 +1,8 @@
 Postgres cluster restoredb created
   Username:    postgres
-  Password:    5gtmCje5G215103
+  Password:    xiBzsrAkUWCBVMW
   Hostname:    restoredb.internal
-  Flycast:     fdaa:3:e508:0:1::2
+  Flycast:     fdaa:3:e508:0:1::5
   Proxy port:  5432
   Postgres port:  5433
-  Connection string: postgres://postgres:5gtmCje5G215103@restoredb.flycast:5432
+  Connection string: postgres://postgres:xiBzsrAkUWCBVMW@restoredb.flycast:5432

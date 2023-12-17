@@ -1,7 +1,9 @@
-version: '0.1.1'
+# 第一次使用 docker compose up 會失敗，因為 app 運行時 db 還沒有完全初始化完
+# 故要兩次 docker compose up 才會成功。
+version: '1.1.1'
 services:
   app:
-    build: .
+    image: liamlin0107/restore:latest
     ports:
       - "8080:80"
     depends_on:

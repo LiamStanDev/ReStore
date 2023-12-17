@@ -83,7 +83,8 @@ public class OrdersController : BaseApiController {
             BuyerId = User.Identity.Name,
             SubTotal = subtotal,
             DeliveryFee = deliveryFee,
-            ShippingAddress = orderDTO.ShippingAddress
+            ShippingAddress = orderDTO.ShippingAddress,
+            PaymentIntentId = basket.PaymentIntentId,
         };
 
         await _context.Orders.AddAsync(order);
