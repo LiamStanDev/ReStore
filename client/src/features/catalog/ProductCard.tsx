@@ -7,20 +7,20 @@ import {
   CardHeader,
   CardMedia,
   Typography,
-} from "@mui/material"
-import Product from "../../app/models/product"
-import { Link } from "react-router-dom"
-import { LoadingButton } from "@mui/lab"
-import { useAppDispatch, useAppSelector } from "../../app/store/configStore"
-import { addBasketItemAsync } from "../basket/basketSlice"
+} from "@mui/material";
+import Product from "../../app/models/product";
+import { Link } from "react-router-dom";
+import { LoadingButton } from "@mui/lab";
+import { useAppDispatch, useAppSelector } from "../../app/store/configStore";
+import { addBasketItemAsync } from "../basket/basketSlice";
 
 interface Prop {
-  product: Product
+  product: Product;
 }
 
 const ProductCard = ({ product }: Prop) => {
-  const dispatch = useAppDispatch()
-  const { status } = useAppSelector((state) => state.basket)
+  const dispatch = useAppDispatch();
+  const { status } = useAppSelector((state) => state.basket);
 
   return (
     <Card>
@@ -62,7 +62,7 @@ const ProductCard = ({ product }: Prop) => {
       </CardContent>
       <CardActions>
         <LoadingButton
-          loading={status.includes("pendingAddBasketItem" + product.id)}
+          loading={status === "pendingAddBasketItem" + product.id}
           onClick={() =>
             dispatch(addBasketItemAsync({ productId: product.id }))
           }
@@ -75,7 +75,7 @@ const ProductCard = ({ product }: Prop) => {
         </Button>
       </CardActions>
     </Card>
-  )
-}
+  );
+};
 
-export default ProductCard
+export default ProductCard;
