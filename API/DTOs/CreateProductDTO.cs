@@ -1,16 +1,29 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace API.Entities;
+namespace API.DTOs;
 
-public class Product {
-    [Key]
-    public int Id { get; set; }
+public class CreateProductDTO {
+    [Required]
     public string Name { get; set; }
+
+    [Required]
     public string Description { get; set; }
+
+    [Required]
+    [Range(100, Double.PositiveInfinity)]
     public long Price { get; set; }
-    public string PictureUrl { get; set; }
+
+    [Required]
+    public IFormFile File { get; set; }
+
+    [Required]
     public string Type { get; set; }
+
+    [Required]
     public string Brand { get; set; }
+
+    [Required]
+    [Range(0, 200)]
     public int QuantityInStock { get; set; }
-    public string PublicId { get; set; }
 }
+

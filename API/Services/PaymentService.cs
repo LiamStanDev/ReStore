@@ -1,4 +1,4 @@
-namespace Services;
+namespace API.Services;
 
 using API.Entities;
 using Stripe;

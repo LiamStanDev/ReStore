@@ -59,9 +59,12 @@ axios.interceptors.response.use(
       case 401:
         toast.error(data.title);
         break;
-      case 404:
-        toast.error(data.title);
-        router.navigate("/not-found");
+        // case 404: // this will cause initial basket so anoyying
+        // toast.error(data.title);
+        // router.navigate("/not-found");
+        break;
+      case 403:
+        toast.error("You're not allowed to do that");
         break;
       case 500:
         // if we want navigate to other page when we are not
@@ -93,6 +96,24 @@ const requests = {
     axios.put(url, body).then((res) => res.data),
 
   delete: (url: string) => axios.delete(url).then((res) => res.data),
+
+  postForm: (url: string, data: FormData) =>
+    axios
+      .post(url, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => res.data),
+
+  putForm: (url: string, data: FormData) =>
+    axios
+      .put(url, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => res.data),
 };
 
 // specific for Catalog functionality.
@@ -136,6 +157,22 @@ const Payment = {
   createPaymentIntent: () => requests.post("payments", {}),
 };
 
+const createFormData = (item: any) => {
+  const formData = new FormData();
+  for (const key in item) {
+    formData.append(key, item[key]);
+  }
+  return formData;
+};
+
+const Admin = {
+  createProduct: (product: any) =>
+    requests.postForm("products", createFormData(product)),
+  updateProduct: (product: any) =>
+    requests.putForm("products", createFormData(product)),
+  deleteProduct: (id: number) => requests.delete(`products/${id}`),
+};
+
 // put all agent here.
 const agent = {
   Catalog,
@@ -144,6 +181,7 @@ const agent = {
   Account,
   Orders,
   Payment,
+  Admin,
 };
 
 export default agent;

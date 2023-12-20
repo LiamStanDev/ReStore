@@ -15,7 +15,7 @@ const ProductList = ({ products }: Prop) => {
     <Grid container spacing={4}>
       {products.map((product) => {
         return (
-          <Grid item xs={4} key={product.id}>
+          <Grid item xs={6} md={4} key={product.id}>
             {productsLoaded ? (
               <ProductCard product={product} />
             ) : (

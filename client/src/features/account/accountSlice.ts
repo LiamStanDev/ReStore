@@ -33,27 +33,23 @@ export const signInUser = createAsyncThunk<User, FieldValues>(
   }
 );
 
-export const fetchCurrentUser = createAsyncThunk<User, void>(
+export const fetchCurrentUser = createAsyncThunk<User>(
   "account/fetchCurrentUser",
   async (_, thunkAPI) => {
     thunkAPI.dispatch(setUser(JSON.parse(localStorage.getItem("user")!)));
     try {
-      const userDTO = await agent.Account.currentUser();
-      const { basket, ...user } = userDTO;
+      const userDto = await agent.Account.currentUser();
+      const { basket, ...user } = userDto;
       if (basket) thunkAPI.dispatch(setBasket(basket));
       localStorage.setItem("user", JSON.stringify(user));
       return user;
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue({ error: error.data });
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
   },
   {
     condition: () => {
-      const item = localStorage.getItem("user");
-      // if we don't have user key in local storage
-      // there has no need to fetch current user
-      return !(item == null);
-      // return store.getState().acount.user == null;
+      if (!localStorage.getItem("user")) return false;
     },
   }
 );
@@ -68,7 +64,16 @@ export const accountSlice = createSlice({
       router.navigate("/");
     },
     setUser: (state, action) => {
-      state.user = action.payload;
+      // atob: ASCII to BASE 64 但是它其實是 BASE64 to ASCII
+      // 相反的操作為 btoa()
+      const claims = JSON.parse(atob(action.payload.token.split(".")[1]));
+      // 這是將 token 在 jwt.io 網站解析後得到的 key
+      const roles =
+        claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      state.user = {
+        ...action.payload,
+        roles: typeof roles === "string" ? [roles] : roles,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -88,7 +93,18 @@ export const accountSlice = createSlice({
     builder.addMatcher(
       isAnyOf(signInUser.fulfilled, fetchCurrentUser.fulfilled),
       (state, action) => {
-        state.user = action.payload;
+        // atob: ASCII to BASE 64 但是它其實是 BASE64 to ASCII
+        // 相反的操作為 btoa()
+        const claims = JSON.parse(atob(action.payload.token.split(".")[1]));
+        // 這是將 token 在 jwt.io 網站解析後得到的 key
+        const roles =
+          claims[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ];
+        state.user = {
+          ...action.payload,
+          roles: typeof roles === "string" ? [roles] : roles,
+        };
       }
     );
   },

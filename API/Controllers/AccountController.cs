@@ -1,5 +1,6 @@
 using API.Data;
 using API.Entities;
+using API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -80,7 +81,7 @@ public class AccountController : BaseApiController {
         var userDTO = new UserDTO {
             Email = user.Email,
             Token = await _tokenService.GenerateToken(user),
-            Basket = userBasket.MapBasketToDTO()
+            Basket = userBasket?.MapBasketToDTO()
         };
 
         return Ok(userDTO);
