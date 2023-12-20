@@ -1,12 +1,13 @@
 using System.Text;
 using API.Data;
+using API.RequestHelpers;
+using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Middleware;
-using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +94,8 @@ builder.Services.AddAuthentication(options => {
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
 var app = builder.Build();
 

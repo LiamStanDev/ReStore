@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { useAppDispatch, useAppSelector } from "../../app/store/configStore";
 import { addBasketItemAsync } from "../basket/basketSlice";
+import { currencyFormat } from "../../app/util/util";
 
 interface Prop {
   product: Product;
@@ -54,7 +55,7 @@ const ProductCard = ({ product }: Prop) => {
           component="div"
           color="secondary.main"
         >
-          ${(product.price / 100).toFixed(2)}
+          {currencyFormat(product.price)}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {product.brand} / {product.type}

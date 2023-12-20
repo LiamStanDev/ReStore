@@ -1,19 +1,13 @@
 import Loading from "../../app/layout/Loading";
 import { useAppDispatch, useAppSelector } from "../../app/store/configStore";
 import ProductList from "./ProductList";
-import { useEffect } from "react";
-import {
-  ProductSelectors,
-  fetchFiltersAsync,
-  fetchProdcutsAsync,
-  setPageNumber,
-  setProductParams,
-} from "./catalogSlice";
-import { Grid, Paper } from "@mui/material";
+import { setPageNumber, setProductParams } from "./catalogSlice";
+import { Grid, Hidden, Paper } from "@mui/material";
 import ProductSearch from "./ProductSearch";
 import RadioButtonGroup from "../../app/components/RadioButtonGroup";
 import CheckBoxButtons from "../../app/components/CheckBoxButtons";
 import AppPagination from "../../app/components/AppPagination";
+import useProducts from "../../app/hooks/useProducts";
 
 const sortOptions = [
   {
@@ -31,24 +25,11 @@ const sortOptions = [
 ];
 
 const Catalog = () => {
-  const products = useAppSelector(ProductSelectors.selectAll);
   const dispatch = useAppDispatch();
-  const {
-    productsLoaded,
-    filtersLoaded,
-    brands,
-    types,
-    productParams,
-    metaData,
-  } = useAppSelector((state) => state.catalog);
 
-  useEffect(() => {
-    if (!productsLoaded) dispatch(fetchProdcutsAsync());
-  }, [productsLoaded, dispatch]);
+  const { products, filtersLoaded, types, brands, metaData } = useProducts();
 
-  useEffect(() => {
-    if (!filtersLoaded) dispatch(fetchFiltersAsync());
-  }, [filtersLoaded, dispatch]);
+  const { productParams } = useAppSelector((state) => state.catalog);
 
   if (!filtersLoaded) {
     return <Loading message="Product is loading" />;
@@ -57,40 +38,42 @@ const Catalog = () => {
   return (
     <>
       <Grid container columnSpacing={4}>
-        <Grid item xs={3}>
-          <Paper sx={{ mb: 2 }}>
-            <ProductSearch />
-          </Paper>
-          <Paper sx={{ mb: 2, p: 2 }}>
-            <RadioButtonGroup
-              selectedValue={productParams.orderBy}
-              options={sortOptions}
-              onChange={(event) =>
-                dispatch(setProductParams({ orderBy: event.target.value }))
-              }
-            />
-          </Paper>
-          <Paper sx={{ mb: 2, p: 2 }}>
-            <CheckBoxButtons
-              items={brands}
-              checked={productParams.brands || []}
-              onChange={(items: string[]) =>
-                dispatch(setProductParams({ brands: items }))
-              }
-            />
-          </Paper>
-          <Paper sx={{ mb: 2, p: 2 }}>
-            <CheckBoxButtons
-              items={types}
-              checked={productParams.types || []}
-              onChange={(items: string[]) => {
-                dispatch(setProductParams({ types: items }));
-              }}
-            />
-          </Paper>
-        </Grid>
+        <Hidden mdDown>
+          <Grid item xs={3}>
+            <Paper sx={{ mb: 2 }}>
+              <ProductSearch />
+            </Paper>
+            <Paper sx={{ mb: 2, p: 2 }}>
+              <RadioButtonGroup
+                selectedValue={productParams.orderBy}
+                options={sortOptions}
+                onChange={(event) =>
+                  dispatch(setProductParams({ orderBy: event.target.value }))
+                }
+              />
+            </Paper>
+            <Paper sx={{ mb: 2, p: 2 }}>
+              <CheckBoxButtons
+                items={brands}
+                checked={productParams.brands || []}
+                onChange={(items: string[]) =>
+                  dispatch(setProductParams({ brands: items }))
+                }
+              />
+            </Paper>
+            <Paper sx={{ mb: 2, p: 2 }}>
+              <CheckBoxButtons
+                items={types}
+                checked={productParams.types || []}
+                onChange={(items: string[]) => {
+                  dispatch(setProductParams({ types: items }));
+                }}
+              />
+            </Paper>
+          </Grid>
+        </Hidden>
 
-        <Grid item xs={9}>
+        <Grid item md={9} xs={12}>
           <ProductList products={products} />
         </Grid>
         <Grid item xs={3}></Grid>

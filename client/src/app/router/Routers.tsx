@@ -12,14 +12,15 @@ import Register from "../../features/account/Register";
 import RequireAuth from "./RequireAuth";
 import Orders from "../../features/orders/Orders";
 import CheckoutWrapper from "../../features/checkout/CheckoutWrapper";
+import Inventory from "../../features/admin/Inventory";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      // Authenticated routs
       {
-        // 這邊的意思是，若訪問 CheckoutPage 時會先進行 RequireAuth
         element: <RequireAuth />,
         children: [
           {
@@ -32,6 +33,18 @@ const router = createBrowserRouter([
           },
         ],
       },
+
+      // admin routs
+      {
+        element: <RequireAuth roles={["Admin"]} />,
+        children: [
+          {
+            path: "inventory",
+            element: <Inventory />,
+          },
+        ],
+      },
+
       {
         path: "catalog",
         element: <Catalog />,

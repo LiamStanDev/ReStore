@@ -66,6 +66,7 @@ function App() {
         <HomePage />
       ) : (
         <Container sx={{ mt: 4 }}>
+          {/* child 路由 */}
           <Outlet />
         </Container>
       )}
