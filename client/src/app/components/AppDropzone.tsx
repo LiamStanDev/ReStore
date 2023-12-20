@@ -1,15 +1,15 @@
 import { UploadFile } from "@mui/icons-material";
-import { FormControl, FormHelperText, Typography } from "@mui/material";
+import { FormControl, Typography, FormHelperText } from "@mui/material";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { UseControllerProps, useController } from "react-hook-form";
+import { useController, UseControllerProps } from "react-hook-form";
 
 interface Props extends UseControllerProps {}
 
 const AppDropzone = (props: Props) => {
   const { fieldState, field } = useController({ ...props, defaultValue: null });
 
-  const dzStyle = {
+  const dzStyles = {
     display: "flex",
     border: "dashed 3px #eee",
     borderColor: "#eee",
@@ -26,11 +26,10 @@ const AppDropzone = (props: Props) => {
 
   const onDrop = useCallback(
     (acceptedFiles: any) => {
-      // we only accept on image
-      acceptedFiles[0] = {
-        ...acceptedFiles[0],
+      // Object.assign 會直接修改原 object ，但展開運算符是建立一個副本
+      acceptedFiles[0] = Object.assign(acceptedFiles[0], {
         preview: URL.createObjectURL(acceptedFiles[0]),
-      };
+      });
       field.onChange(acceptedFiles[0]);
     },
     [field]
@@ -39,7 +38,10 @@ const AppDropzone = (props: Props) => {
 
   return (
     <div {...getRootProps()}>
-      <FormControl style={isDragActive ? { ...dzStyle, ...dzActive } : dzStyle}>
+      <FormControl
+        style={isDragActive ? { ...dzStyles, ...dzActive } : dzStyles}
+        error={!!fieldState.error}
+      >
         <input {...getInputProps()} />
         <UploadFile sx={{ fontSize: "100px" }} />
         <Typography variant="h4">Drop image here</Typography>
