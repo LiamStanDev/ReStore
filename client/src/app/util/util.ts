@@ -4,4 +4,8 @@ const getCookie = (key: string) => {
   return b ? b.pop() : "";
 };
 
-export { getCookie };
+const currencyFormat = (amount: number): string => {
+  return "$" + (amount / 100).toFixed(2);
+};
+
+export { getCookie, currencyFormat };

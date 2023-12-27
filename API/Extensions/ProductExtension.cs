@@ -40,8 +40,8 @@ public static class ProductExtension {
             }
         }
 
-        var filteredQuery = query.Where(p => brandSet.Count == 0 || brandSet.Contains(p.Brand));
-        filteredQuery = filteredQuery.Where(p => typeSet.Count == 0 || typeSet.Contains(p.Type));
+        var filteredQuery = query.Where(p => brandSet.Count == 0 || brandSet.Contains(p.Brand.ToLower()));
+        filteredQuery = filteredQuery.Where(p => typeSet.Count == 0 || typeSet.Contains(p.Type.ToLower()));
 
         return filteredQuery;
     }

@@ -1,4 +1,5 @@
-import { Box, Typography } from "@mui/material";
+import { useTheme } from "@emotion/react";
+import { Box, Typography, useMediaQuery } from "@mui/material";
 import Slider from "react-slick";
 
 const HomePage = () => {
@@ -9,6 +10,9 @@ const HomePage = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
+  const theme: any = useTheme();
+  const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
 
   return (
     <>
@@ -37,7 +41,9 @@ const HomePage = () => {
       </Slider>
 
       <Box display="flex" justifyContent="center" sx={{ p: 4 }}>
-        <Typography variant="h1">Welcome to the shop!</Typography>
+        <Typography variant={isMdUp ? "h1" : "h4"}>
+          Welcome to the shop!
+        </Typography>
       </Box>
     </>
   );

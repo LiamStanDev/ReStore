@@ -123,6 +123,15 @@ export const catalogSlice = createSlice({
     setMetaData: (state, action) => {
       state.metaData = action.payload;
     },
+    setProduct: (state, action) => {
+      productAdapter.upsertOne(state, action.payload); // 這行沒有必要，因為這樣做不會使 pagination 刷新
+      state.productsLoaded = false; // 使它重新向後端取得新的 catalogs，這樣 pagination 才會刷新
+    },
+    removeProduct: (state, action) => {
+      productAdapter.removeOne(state, action.payload); // 這行沒有必要，因為這樣做不會使 pagination 刷新
+
+      state.productsLoaded = false; // 使它重新向後端取得新的 catalogs，這樣 pagination 才會刷新
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchProdcutsAsync.pending, (state) => {
@@ -179,4 +188,6 @@ export const {
   resetProductParams,
   setMetaData,
   setPageNumber,
+  setProduct,
+  removeProduct,
 } = catalogSlice.actions;
