@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs;
 
-public class UpdateProduct {
+public class UpdateProduct
+{
     public int Id { get; set; }
 
     [Required]

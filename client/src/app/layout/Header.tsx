@@ -113,7 +113,7 @@ const Header = ({ darkMode, setDarkMode }: Prop) => {
 
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <IconButton edge="start" size="large" component={Link} to={"/basket"}>
-            <Badge badgeContent={itemCount} sx={{ color: "#eee" }}>
+            <Badge badgeContent={itemCount}>
               <ShoppingCart />
             </Badge>
           </IconButton>

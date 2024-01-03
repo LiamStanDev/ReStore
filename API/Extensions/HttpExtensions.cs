@@ -3,8 +3,10 @@ using API.RequestHelpers;
 
 namespace API.Extensions;
 
-public static class HttpExtensions {
-    public static void AddPaginationHeader(this HttpResponse response, MetaData metaData) {
+public static class HttpExtensions
+{
+    public static void AddPaginationHeader(this HttpResponse response, MetaData metaData)
+    {
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         response.Headers.Add("Pagination", JsonSerializer.Serialize(metaData, options));
         // 因為 CORS 政策, 非同源訪問得 JS 只能訪問受限的 Header, 也就是說

@@ -1,6 +1,7 @@
 namespace API.DTOs;
 
-public class OrderItemDTO {
+public class OrderItemDTO
+{
     public int ProductId { get; set; }
     public string Name { get; set; }
     public string PictureUrl { get; set; }

@@ -10,15 +10,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 [Authorize]
-public class OrdersController : BaseApiController {
+public class OrdersController : BaseApiController
+{
     private readonly StoreContext _context;
 
-    public OrdersController(StoreContext context) {
+    public OrdersController(StoreContext context)
+    {
         _context = context;
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<OrderDTO>>> GetOrders() {
+    public async Task<ActionResult<List<OrderDTO>>> GetOrders()
+    {
         var orders = await _context.Orders
             .Include(o => o.OrderItems)
             .Where(o => o.BuyerId == User.Identity.Name)
@@ -29,7 +32,8 @@ public class OrdersController : BaseApiController {
     }
 
     [HttpGet("{id}", Name = "GetOrder")]
-    public async Task<ActionResult<OrderDTO>> GetOrder(int id) {
+    public async Task<ActionResult<OrderDTO>> GetOrder(int id)
+    {
         var order = await _context.Orders
             .Include(o => o.OrderItems)
             .Where(o => o.BuyerId == User.Identity.Name && o.Id == id)
@@ -40,31 +44,37 @@ public class OrdersController : BaseApiController {
 
     [HttpPost]
     // 其實這邊返回值，因為我偷懶所以應該寫成 Task<ActionResult<int>>
-    public async Task<ActionResult<Order>> CreateOrder(CreateOrderDTO orderDTO) {
+    public async Task<ActionResult<Order>> CreateOrder(CreateOrderDTO orderDTO)
+    {
         var basket = await _context.Baskets
             .AsQueryable()
             .RetriveBasketWithItems(User.Identity.Name)
             .FirstOrDefaultAsync();
 
-        if (basket == null) {
-            return BadRequest(new ProblemDetails {
+        if (basket == null)
+        {
+            return BadRequest(new ProblemDetails
+            {
                 Title = "Could not locate basket"
             });
         }
 
         var items = new List<OrderItem>();
 
-        foreach (var item in basket.Items) {
+        foreach (var item in basket.Items)
+        {
             // 下單時需要確保是新的價格，因為價格可能會改變。
             var productItem = await _context.Products.FindAsync(item.ProductId);
 
-            var itemOrdered = new ProductItemOrdered {
+            var itemOrdered = new ProductItemOrdered
+            {
                 ProductId = productItem.Id,
                 Name = productItem.Name,
                 PictureUrl = productItem.PictureUrl
             };
 
-            var orderItem = new OrderItem {
+            var orderItem = new OrderItem
+            {
                 ItemOrdered = itemOrdered,
                 Price = productItem.Price,
                 Quantity = item.Quantity
@@ -78,7 +88,8 @@ public class OrdersController : BaseApiController {
         var subtotal = items.Sum(i => i.Price * i.Quantity);
         var deliveryFee = subtotal > 10000 ? 0 : 500;
 
-        var order = new Order {
+        var order = new Order
+        {
             OrderItems = items,
             BuyerId = User.Identity.Name,
             SubTotal = subtotal,
@@ -90,11 +101,13 @@ public class OrdersController : BaseApiController {
         await _context.Orders.AddAsync(order);
         _context.Baskets.Remove(basket);
 
-        if (orderDTO.SaveAddress) {
+        if (orderDTO.SaveAddress)
+        {
             var user = await _context.Users
                 .Include(u => u.Address)
                 .FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
-            var address = new UserAddress {
+            var address = new UserAddress
+            {
                 FullName = orderDTO.ShippingAddress.FullName,
                 Address1 = orderDTO.ShippingAddress.Address1,
                 Address2 = orderDTO.ShippingAddress.Address2,

@@ -6,19 +6,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class BasketController : BaseApiController {
+public class BasketController : BaseApiController
+{
     private readonly StoreContext _context;
 
-    public BasketController(StoreContext context) {
+    public BasketController(StoreContext context)
+    {
         _context = context;
     }
 
     [HttpGet(Name = "GetBasket")] // The name is for locating 201 Create. See AddItemToBasket.
-    public async Task<ActionResult<BasketDTO>> GetBasket() {
+    public async Task<ActionResult<BasketDTO>> GetBasket()
+    {
 
         var basket = await RetriveBasket(GetBuyerId());
 
-        if (basket == null) {
+        if (basket == null)
+        {
             return NotFound();
         }
 
@@ -27,7 +31,8 @@ public class BasketController : BaseApiController {
     }
 
     [HttpPost]
-    public async Task<ActionResult<BasketDTO>> AddItemToBasket(int productId, int quantity) {
+    public async Task<ActionResult<BasketDTO>> AddItemToBasket(int productId, int quantity)
+    {
         var basket = await RetriveBasket(GetBuyerId());
         if (basket == null) basket = await CreateBasket();
 
@@ -38,7 +43,8 @@ public class BasketController : BaseApiController {
 
         var result = await _context.SaveChangesAsync() > 0;
 
-        if (result) {
+        if (result)
+        {
             // source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201
             // The standard 201 respones needs the location which indicate how
             // to get the new create resource in response header.
@@ -56,15 +62,18 @@ public class BasketController : BaseApiController {
     }
 
     [HttpDelete]
-    public async Task<ActionResult> RemoveBasketItem(int productId, int quantity) {
+    public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
+    {
         var basket = await RetriveBasket(GetBuyerId());
 
-        if (basket == null) {
+        if (basket == null)
+        {
             return NotFound();
         }
 
         var product = await _context.Products.FindAsync(productId);
-        if (product == null) {
+        if (product == null)
+        {
             return BadRequest(new ProblemDetails { Title = "Problem removing item from basket" });
         }
 
@@ -72,7 +81,8 @@ public class BasketController : BaseApiController {
 
         var result = await _context.SaveChangesAsync() > 0;
 
-        if (result) {
+        if (result)
+        {
             return Ok();
         }
         return BadRequest(new ProblemDetails { Title = "Problem saving item to basket" });
@@ -83,8 +93,10 @@ public class BasketController : BaseApiController {
     // 匿名 Basket 會使用 Cookie 存放在瀏覽器中
     // 已登入的使用者使用 buterId 也就是 username 就能
     // 取得他自己的 Basket.
-    private async Task<Basket> RetriveBasket(string buyerId) {
-        if (string.IsNullOrEmpty(buyerId)) {
+    private async Task<Basket> RetriveBasket(string buyerId)
+    {
+        if (string.IsNullOrEmpty(buyerId))
+        {
             Response.Cookies.Delete("buyerId");
             return null;
         }
@@ -96,16 +108,19 @@ public class BasketController : BaseApiController {
         return basket;
     }
 
-    private string GetBuyerId() {
+    private string GetBuyerId()
+    {
         return User.Identity?.Name ?? Request.Cookies["buyerId"];
     }
 
-    private async Task<Basket> CreateBasket() {
+    private async Task<Basket> CreateBasket()
+    {
         // 用戶 Basket
         var buyerId = User.Identity?.Name;
 
         // 匿名 Basket
-        if (string.IsNullOrEmpty(buyerId)) {
+        if (string.IsNullOrEmpty(buyerId))
+        {
             buyerId = Guid.NewGuid().ToString();
             var cookieOptions = new CookieOptions { IsEssential = true, Expires = DateTime.Now.AddDays(30) };
             Response.Cookies.Append("buyerId", buyerId, cookieOptions);

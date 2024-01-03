@@ -1,5 +1,6 @@
 namespace Entity.OrderAggregate;
-public enum OrderStatus {
+public enum OrderStatus
+{
     Pending,
     PaymentReceived,
     PaymentFailed

@@ -3,10 +3,12 @@ using CloudinaryDotNet.Actions;
 
 namespace API.Services;
 
-public class ImageService {
+public class ImageService
+{
     private readonly Cloudinary _cloudunary;
 
-    public ImageService(IConfiguration config) {
+    public ImageService(IConfiguration config)
+    {
 
         var acc = new Account(
                 config["Cloudinary:CloudName"],
@@ -17,13 +19,16 @@ public class ImageService {
         _cloudunary = new Cloudinary(acc);
     }
 
-    public async Task<ImageUploadResult> AddImageAsync(IFormFile file) {
+    public async Task<ImageUploadResult> AddImageAsync(IFormFile file)
+    {
         ImageUploadResult uploadResult = new();
 
-        if (file.Length > 0) {
+        if (file.Length > 0)
+        {
             using var stream = file.OpenReadStream();
 
-            var uploadParams = new ImageUploadParams {
+            var uploadParams = new ImageUploadParams
+            {
                 File = new FileDescription(file.Name, stream),
             };
 
@@ -33,7 +38,8 @@ public class ImageService {
         return uploadResult;
     }
 
-    public async Task<DeletionResult> DeleteImageAsync(string publicId) {
+    public async Task<DeletionResult> DeleteImageAsync(string publicId)
+    {
         var delParams = new DeletionParams(publicId);
 
         var result = await _cloudunary.DestroyAsync(delParams);

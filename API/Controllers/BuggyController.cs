@@ -2,14 +2,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class BuggyController : BaseApiController {
+public class BuggyController : BaseApiController
+{
     [HttpGet("not-found")]
-    public ActionResult GetNotFound() {
+    public ActionResult GetNotFound()
+    {
         return NotFound();
     }
 
     [HttpGet("bad-request")]
-    public ActionResult GetBadRequest() {
+    public ActionResult GetBadRequest()
+    {
         // return BadRequest("this is a base request");
         /*
          * ProblemDetails is format for specifying errors in HTTP API responses
@@ -23,12 +26,14 @@ public class BuggyController : BaseApiController {
     }
 
     [HttpGet("unauthorized")]
-    public ActionResult GetUnauthorized() {
+    public ActionResult GetUnauthorized()
+    {
         return Unauthorized();
     }
 
     [HttpGet("validation-error")]
-    public ActionResult GetValidationError() {
+    public ActionResult GetValidationError()
+    {
         // the ApiController Attribute will return Validation
         // Error, so we can use ModelState to return Validation 
         // Error.
@@ -40,7 +45,8 @@ public class BuggyController : BaseApiController {
     }
 
     [HttpGet("server-error")]
-    public ActionResult GetServerError() {
+    public ActionResult GetServerError()
+    {
         throw new Exception("This is a server error");
     }
 }

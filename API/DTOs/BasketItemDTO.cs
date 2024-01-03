@@ -1,6 +1,7 @@
 namespace API.DTOs;
 
-public class BasketItemDTO {
+public class BasketItemDTO
+{
     public int ProductId { get; set; }
     public string Name { get; set; }
     public long Price { get; set; }

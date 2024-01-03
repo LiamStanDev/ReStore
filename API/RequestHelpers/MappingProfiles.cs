@@ -4,8 +4,10 @@ using AutoMapper;
 
 namespace API.RequestHelpers;
 
-public class MappingProfiles : Profile {
-    public MappingProfiles() {
+public class MappingProfiles : Profile
+{
+    public MappingProfiles()
+    {
         CreateMap<CreateProductDTO, Product>();
         CreateMap<UpdateProduct, Product>();
 

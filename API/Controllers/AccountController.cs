@@ -8,29 +8,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController : BaseApiController {
+public class AccountController : BaseApiController
+{
     private readonly UserManager<User> _userManager;
     private readonly TokenService _tokenService;
     private readonly StoreContext _context;
 
-    public AccountController(UserManager<User> userManager, TokenService tokenService, StoreContext context) {
+    public AccountController(UserManager<User> userManager, TokenService tokenService, StoreContext context)
+    {
         _userManager = userManager;
         _tokenService = tokenService;
         _context = context;
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO) {
+    public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
+    {
         var user = await _userManager.FindByNameAsync(loginDTO.UserName);
-        if (user == null || !await _userManager.CheckPasswordAsync(user, loginDTO.Password)) {
+        if (user == null || !await _userManager.CheckPasswordAsync(user, loginDTO.Password))
+        {
             return Unauthorized();
         }
 
         var userBasket = await RetriveBasket(user.UserName);
         var anonBasket = await RetriveBasket(Request.Cookies["buyerId"]);
 
-        if (anonBasket != null) {
-            if (userBasket != null) {
+        if (anonBasket != null)
+        {
+            if (userBasket != null)
+            {
                 _context.Baskets.Remove(userBasket);
             }
             anonBasket.BuyerId = user.UserName;
@@ -40,7 +46,8 @@ public class AccountController : BaseApiController {
         }
 
 
-        var userDTO = new UserDTO {
+        var userDTO = new UserDTO
+        {
             Email = user.Email,
             Token = await _tokenService.GenerateToken(user),
             // the ? before MapBasketToDTO is used because
@@ -52,13 +59,16 @@ public class AccountController : BaseApiController {
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDTO registerDTO) {
+    public async Task<IActionResult> Register(RegisterDTO registerDTO)
+    {
         var newUser = new User { UserName = registerDTO.UserName, Email = registerDTO.Email };
 
         var result = await _userManager.CreateAsync(newUser, registerDTO.Password);
 
-        if (!result.Succeeded) {
-            foreach (var error in result.Errors) {
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
                 ModelState.AddModelError(error.Code, error.Description);
             }
             return ValidationProblem();
@@ -72,13 +82,15 @@ public class AccountController : BaseApiController {
     // [Authorize(AuthenticationSchemes = "Bearer")]
     [Authorize]
     [HttpGet("currentUser")]
-    public async Task<ActionResult<UserDTO>> GetCurrentUser() {
+    public async Task<ActionResult<UserDTO>> GetCurrentUser()
+    {
         // User is from controller base.
         var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
         var userBasket = await RetriveBasket(User.Identity.Name);
 
-        var userDTO = new UserDTO {
+        var userDTO = new UserDTO
+        {
             Email = user.Email,
             Token = await _tokenService.GenerateToken(user),
             Basket = userBasket?.MapBasketToDTO()
@@ -89,7 +101,8 @@ public class AccountController : BaseApiController {
 
     [Authorize]
     [HttpGet("savedAddress")]
-    public async Task<ActionResult<UserAddress>> GetSavedAddress() {
+    public async Task<ActionResult<UserAddress>> GetSavedAddress()
+    {
         return await _userManager.Users
             .Where(u => u.UserName == User.Identity.Name)
             .Select(u => u.Address)
@@ -97,8 +110,10 @@ public class AccountController : BaseApiController {
     }
 
 
-    private async Task<Basket> RetriveBasket(string buyerId) {
-        if (string.IsNullOrEmpty(buyerId)) {
+    private async Task<Basket> RetriveBasket(string buyerId)
+    {
+        if (string.IsNullOrEmpty(buyerId))
+        {
             Response.Cookies.Delete("buyerId");
             return null;
         }

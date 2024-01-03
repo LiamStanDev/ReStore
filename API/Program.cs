@@ -17,53 +17,58 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(cfg => {
-    var jwtSecurityScheme = new OpenApiSecurityScheme {
-        BearerFormat = "JWT",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = JwtBearerDefaults.AuthenticationScheme,
-        Description = "Put Bearer + your token in the box below",
-        Reference = new OpenApiReference {
-            Id = JwtBearerDefaults.AuthenticationScheme,
-            Type = ReferenceType.SecurityScheme
-        }
-    };
+builder.Services.AddSwaggerGen(cfg =>
+{
+	var jwtSecurityScheme = new OpenApiSecurityScheme
+	{
+		BearerFormat = "JWT",
+		Name = "Authorization",
+		In = ParameterLocation.Header,
+		Type = SecuritySchemeType.ApiKey,
+		Scheme = JwtBearerDefaults.AuthenticationScheme,
+		Description = "Put Bearer + your token in the box below",
+		Reference = new OpenApiReference
+		{
+			Id = JwtBearerDefaults.AuthenticationScheme,
+			Type = ReferenceType.SecurityScheme
+		}
+	};
 
-    cfg.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+	cfg.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
 
-    cfg.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            jwtSecurityScheme, Array.Empty<string>()
-        }
-    });
+	cfg.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{
+			jwtSecurityScheme, Array.Empty<string>()
+		}
+	});
 });
 
 string connString;
 if (builder.Environment.IsDevelopment())
-    connString = builder.Configuration.GetConnectionString("PostgreSQL");
-else {
-    // Use connection string provided at runtime by FlyIO.
-    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+	connString = builder.Configuration.GetConnectionString("PostgreSQL");
+else
+{
+	// Use connection string provided at runtime by FlyIO.
+	var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-    // Parse connection URL to connection string for Npgsql
-    connUrl = connUrl.Replace("postgres://", string.Empty);
-    var pgUserPass = connUrl.Split("@")[0];
-    var pgHostPortDb = connUrl.Split("@")[1];
-    var pgHostPort = pgHostPortDb.Split("/")[0];
-    var pgDb = pgHostPortDb.Split("/")[1];
-    var pgUser = pgUserPass.Split(":")[0];
-    var pgPass = pgUserPass.Split(":")[1];
-    var pgHost = pgHostPort.Split(":")[0];
-    var pgPort = pgHostPort.Split(":")[1];
-    var updatedHost = pgHost.Replace("flycast", "internal");
+	// Parse connection URL to connection string for Npgsql
+	connUrl = connUrl.Replace("postgres://", string.Empty);
+	var pgUserPass = connUrl.Split("@")[0];
+	var pgHostPortDb = connUrl.Split("@")[1];
+	var pgHostPort = pgHostPortDb.Split("/")[0];
+	var pgDb = pgHostPortDb.Split("/")[1];
+	var pgUser = pgUserPass.Split(":")[0];
+	var pgPass = pgUserPass.Split(":")[1];
+	var pgHost = pgHostPort.Split(":")[0];
+	var pgPort = pgHostPort.Split(":")[1];
+	var updatedHost = pgHost.Replace("flycast", "internal");
 
-    connString = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+	connString = $"Server={updatedHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
 }
-builder.Services.AddDbContext<StoreContext>(opt => {
-    opt.UseNpgsql(connString);
+builder.Services.AddDbContext<StoreContext>(opt =>
+{
+	opt.UseNpgsql(connString);
 });
 
 
@@ -71,25 +76,29 @@ builder.Services.AddCors();
 // builder.Services.AddIdentityCore<User>()
 //     .AddRoles<IdentityRole>()
 //     .AddEntityFrameworkStores<StoreContext>();
-builder.Services.AddIdentity<User, Role>(opt => {
-    opt.Password.RequireNonAlphanumeric = false;
-    opt.User.RequireUniqueEmail = true;
+builder.Services.AddIdentity<User, Role>(opt =>
+{
+	opt.Password.RequireNonAlphanumeric = false;
+	opt.User.RequireUniqueEmail = true;
 }).AddEntityFrameworkStores<StoreContext>();
 
-builder.Services.AddAuthentication(options => {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    .AddJwtBearer(opt => {
-        opt.TokenValidationParameters = new TokenValidationParameters {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
-                GetBytes(builder.Configuration["JWTSettings:TokenKey2"]))
-        };
-    });
+	.AddJwtBearer(opt =>
+	{
+		opt.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = false,
+			ValidateAudience = false,
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
+				GetBytes(builder.Configuration["JWTSettings:TokenKey2"]))
+		};
+	});
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
@@ -102,22 +111,24 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) {
-    app.UseSwagger();
-    app.UseSwaggerUI(cfg =>
-        cfg.ConfigObject.AdditionalItems.Add("persistAuthorization", "true")
-    );
+if (app.Environment.IsDevelopment())
+{
+	app.UseSwagger();
+	app.UseSwaggerUI(cfg =>
+		cfg.ConfigObject.AdditionalItems.Add("persistAuthorization", "true")
+	);
 }
 
 // wwwroot files
 app.UseDefaultFiles(); // look for index.html in wwwroot
 app.UseStaticFiles(); // serve for wwwroot content
 
-app.UseCors(policy => {
-    // why allow creadentials?
-    // because the cookies etc. are in the localhost:3000 which is not
-    // in the same domain, we need to set allow creadential to accept cookies.
-    policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
+app.UseCors(policy =>
+{
+	// why allow creadentials?
+	// because the cookies etc. are in the localhost:3000 which is not
+	// in the same domain, we need to set allow creadential to accept cookies.
+	policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
 });
 
 app.UseAuthentication();
@@ -129,19 +140,23 @@ app.MapControllers();
 // use Index method which in Fallback controller
 app.MapFallbackToController("Index", "Fallback");
 
-using (var scope = app.Services.CreateScope()) {
-    try {
-        // 這邊不能使用app.Serivices.GetRequiredService，因為這樣取得的服務
-        // 生命週期大於scope
-        var context = scope.ServiceProvider.GetRequiredService<StoreContext>();
-        await context.Database.MigrateAsync();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-        await DbInitializer.Initialize(context, userManager);
-    } catch (Exception ex) {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "A problem occurred during migration");
-        throw ex;
-    }
+using (var scope = app.Services.CreateScope())
+{
+	try
+	{
+		// 這邊不能使用app.Serivices.GetRequiredService，因為這樣取得的服務
+		// 生命週期大於scope
+		var context = scope.ServiceProvider.GetRequiredService<StoreContext>();
+		await context.Database.MigrateAsync();
+		var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+		await DbInitializer.Initialize(context, userManager);
+	}
+	catch (Exception ex)
+	{
+		var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+		logger.LogError(ex, "A problem occurred during migration");
+		throw ex;
+	}
 }
 
 app.Run();

@@ -9,12 +9,14 @@ using Stripe;
 
 namespace API.Controllers;
 
-public class PaymentsController : BaseApiController {
+public class PaymentsController : BaseApiController
+{
     private readonly PaymentService _paymentService;
     private readonly StoreContext _context;
     private readonly IConfiguration _config;
 
-    public PaymentsController(PaymentService paymentService, StoreContext context, IConfiguration config) {
+    public PaymentsController(PaymentService paymentService, StoreContext context, IConfiguration config)
+    {
         _paymentService = paymentService;
         _context = context;
         _config = config;
@@ -23,19 +25,23 @@ public class PaymentsController : BaseApiController {
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<BasketDTO>> CreateOrUpdatePaymentIntent() {
+    public async Task<ActionResult<BasketDTO>> CreateOrUpdatePaymentIntent()
+    {
         var basket = await _context.Baskets
                     .RetriveBasketWithItems(User.Identity.Name)
                     .FirstOrDefaultAsync();
 
-        if (basket == null) {
+        if (basket == null)
+        {
             return NotFound();
         }
 
         var intent = await _paymentService.CreateOrUpdatePaymentIntent(basket);
 
-        if (intent == null) {
-            return BadRequest(new ProblemDetails {
+        if (intent == null)
+        {
+            return BadRequest(new ProblemDetails
+            {
                 Title = "Problem creating payment intent"
             });
         }
@@ -55,7 +61,8 @@ public class PaymentsController : BaseApiController {
     }
 
     [HttpPost("webhook")]
-    public async Task<ActionResult> StripeWebHook() {
+    public async Task<ActionResult> StripeWebHook()
+    {
         // from stream to stream reader
         StreamReader sr = new StreamReader(Request.Body);
         var json = await sr.ReadToEndAsync();
