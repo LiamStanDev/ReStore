@@ -11,19 +11,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class ProductsController : BaseApiController {
+public class ProductsController : BaseApiController
+{
     private readonly StoreContext _context;
     private readonly IMapper _mapper;
     private readonly ImageService _imageService;
 
-    public ProductsController(StoreContext context, IMapper mapper, ImageService imageService) {
+    public ProductsController(StoreContext context, IMapper mapper, ImageService imageService)
+    {
         _context = context;
         _mapper = mapper;
         _imageService = imageService;
     }
 
     [HttpGet("{id}", Name = "GetProduct")]
-    public async Task<ActionResult<Product>> GetProduct(int id) {
+    public async Task<ActionResult<Product>> GetProduct(int id)
+    {
         var product = await _context.Products.FindAsync(id);
 
         return product == null ? NotFound() : Ok(product);
@@ -34,7 +37,8 @@ public class ProductsController : BaseApiController {
     // the data is from request body. I want to use in query string, so
     // I use [FromQuery] attribute
     [HttpGet]
-    public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams) {
+    public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
+    {
         var query = _context.Products
             .AsQueryable()
             .Sort(productParams.OrderBy)
@@ -54,7 +58,8 @@ public class ProductsController : BaseApiController {
     }
 
     [HttpGet("filter")]
-    public async Task<IActionResult> GetFilters() {
+    public async Task<IActionResult> GetFilters()
+    {
         var brands = await _context.Products.Select(p => p.Brand).Distinct().ToListAsync();
         var types = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
 
@@ -63,10 +68,12 @@ public class ProductsController : BaseApiController {
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDTO productDTO) {
+    public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDTO productDTO)
+    {
         var product = _mapper.Map<Product>(productDTO);
 
-        if (productDTO.File is not null) {
+        if (productDTO.File is not null)
+        {
             var imageResult = await _imageService.AddImageAsync(productDTO.File);
 
             if (imageResult.Error is not null) return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
@@ -77,9 +84,12 @@ public class ProductsController : BaseApiController {
 
         await _context.Products.AddAsync(product);
         var result = await _context.SaveChangesAsync() > 0;
-        if (result) {
+        if (result)
+        {
             return CreatedAtRoute("GetProduct", new { Id = product.Id }, product);
-        } else {
+        }
+        else
+        {
             return BadRequest(new ProblemDetails { Title = "Problem creating new Product..." });
         }
     }
@@ -87,16 +97,19 @@ public class ProductsController : BaseApiController {
 
     [Authorize(Roles = "Admin")]
     [HttpPut]
-    public async Task<ActionResult<Product>> UpdateProduct([FromForm] UpdateProduct productDTO) {
+    public async Task<ActionResult<Product>> UpdateProduct([FromForm] UpdateProduct productDTO)
+    {
         var product = await _context.Products.FindAsync(productDTO.Id);
 
-        if (product is null) {
+        if (product is null)
+        {
             return NotFound();
         }
 
         _mapper.Map(productDTO, product);
 
-        if (productDTO.File is not null) {
+        if (productDTO.File is not null)
+        {
             var imageResult = await _imageService.AddImageAsync(productDTO.File);
 
             if (imageResult.Error is not null) { return BadRequest(new ProblemDetails { Title = imageResult.Error.Message }); }
@@ -109,18 +122,23 @@ public class ProductsController : BaseApiController {
 
         var result = await _context.SaveChangesAsync() > 0;
 
-        if (result) {
+        if (result)
+        {
             return Ok(product);
-        } else {
+        }
+        else
+        {
             return BadRequest(new ProblemDetails { Title = "Problem updating Product..." });
         }
     }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProduct(int id) {
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
         var product = await _context.Products.FindAsync(id);
-        if (product is null) {
+        if (product is null)
+        {
             return NotFound();
         }
 
@@ -130,9 +148,12 @@ public class ProductsController : BaseApiController {
 
         var result = await _context.SaveChangesAsync() > 0;
 
-        if (result) {
+        if (result)
+        {
             return Ok();
-        } else {
+        }
+        else
+        {
             return BadRequest(new ProblemDetails { Title = "Problem deleting Product..." });
         }
     }

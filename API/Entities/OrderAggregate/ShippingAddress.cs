@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
  * in the ShippingAddress is stored in Order class.
  */
 [Owned]
-public class ShippingAddress : Address {
+public class ShippingAddress : Address
+{
 
 }

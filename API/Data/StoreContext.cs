@@ -8,7 +8,8 @@ namespace API.Data;
  * The the third generic type means the user and role use
  * int as primary key
  */
-public class StoreContext : IdentityDbContext<User, Role, int> {
+public class StoreContext : IdentityDbContext<User, Role, int>
+{
 
     // because I need to add connection string to my StroreContext object,
     // I add this constructor. The options will pass to the base class which is 
@@ -21,7 +22,8 @@ public class StoreContext : IdentityDbContext<User, Role, int> {
 
     public DbSet<Order> Orders { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder builder) {
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
         base.OnModelCreating(builder); // is neccessary.
 
         // 這麼做主要是希望不要有navigator

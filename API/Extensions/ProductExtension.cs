@@ -2,12 +2,16 @@ using API.Entities;
 
 namespace API.Extensions;
 
-public static class ProductExtension {
-    public static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy) {
-        if (string.IsNullOrWhiteSpace(orderBy)) {
+public static class ProductExtension
+{
+    public static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy)
+    {
+        if (string.IsNullOrWhiteSpace(orderBy))
+        {
             return query.OrderBy(p => p.Name);
         }
-        var querySorted = orderBy switch {
+        var querySorted = orderBy switch
+        {
             "price" => query.OrderBy(p => p.Price),
             "priceDesc" => query.OrderByDescending(p => p.Price),
             _ => query.OrderBy(p => p.Name)
@@ -16,7 +20,8 @@ public static class ProductExtension {
         return querySorted;
     }
 
-    public static IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm) {
+    public static IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)
+    {
         if (string.IsNullOrEmpty(searchTerm)) return query;
 
         var lowerCaseSearchIerm = searchTerm.Trim().ToLower();
@@ -24,18 +29,23 @@ public static class ProductExtension {
         return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchIerm));
     }
 
-    public static IQueryable<Product> Filter(this IQueryable<Product> query, string brands, string types) {
+    public static IQueryable<Product> Filter(this IQueryable<Product> query, string brands, string types)
+    {
         HashSet<string> brandSet = new();
         HashSet<string> typeSet = new();
 
-        if (!string.IsNullOrEmpty(brands)) {
-            foreach (var brand in brands.ToLower().Split(",")) {
+        if (!string.IsNullOrEmpty(brands))
+        {
+            foreach (var brand in brands.ToLower().Split(","))
+            {
                 brandSet.Add(brand);
             }
         }
 
-        if (!string.IsNullOrEmpty(types)) {
-            foreach (var type in types.ToLower().Split(",")) {
+        if (!string.IsNullOrEmpty(types))
+        {
+            foreach (var type in types.ToLower().Split(","))
+            {
                 typeSet.Add(type);
             }
         }

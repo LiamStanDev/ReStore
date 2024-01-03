@@ -2,7 +2,8 @@ namespace Entity.OrderAggregate;
 
 using System.ComponentModel.DataAnnotations;
 
-public class Order {
+public class Order
+{
     public int Id { get; set; }
     public string BuyerId { get; set; }
     [Required]
@@ -15,7 +16,8 @@ public class Order {
     // for Stripe
     public string PaymentIntentId { get; set; }
 
-    public long GetTotal() {
+    public long GetTotal()
+    {
         return SubTotal + DeliveryFee;
     }
 }

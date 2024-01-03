@@ -2,7 +2,8 @@ using Entity.OrderAggregate;
 
 namespace API.DTOs;
 
-public class OrderDTO {
+public class OrderDTO
+{
     public int Id { get; set; }
     public string BuyerId { get; set; }
     public ShippingAddress ShippingAddress { get; set; }

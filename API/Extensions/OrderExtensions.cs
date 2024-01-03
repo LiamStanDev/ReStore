@@ -4,12 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions;
 
-public static class OrderExtensions {
+public static class OrderExtensions
+{
 
-    public static IQueryable<OrderDTO> MapOrderToDTO(this IQueryable<Order> query) {
+    public static IQueryable<OrderDTO> MapOrderToDTO(this IQueryable<Order> query)
+    {
         return query
             .AsNoTracking()
-            .Select(o => new OrderDTO {
+            .Select(o => new OrderDTO
+            {
                 Id = o.Id,
                 ShippingAddress = o.ShippingAddress,
                 Total = o.GetTotal(),
@@ -18,7 +21,8 @@ public static class OrderExtensions {
                 SubTotal = o.SubTotal,
                 OrderStatus = o.OrderStatus.ToString(),
                 DeliveryFee = o.DeliveryFee,
-                OrderItems = o.OrderItems.Select(i => new OrderItemDTO {
+                OrderItems = o.OrderItems.Select(i => new OrderItemDTO
+                {
                     Name = i.ItemOrdered.Name,
                     ProductId = i.ItemOrdered.ProductId,
                     Price = i.Price,
