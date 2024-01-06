@@ -26,14 +26,14 @@ const midLink = [
     title: "catalog",
     path: "/catalog",
   },
-  {
-    title: "about",
-    path: "/about",
-  },
-  {
-    title: "contact",
-    path: "/contact",
-  },
+  // {
+  //   title: "about",
+  //   path: "/about",
+  // },
+  // {
+  //   title: "contact",
+  //   path: "/contact",
+  // },
 ];
 
 const rightLink = [
